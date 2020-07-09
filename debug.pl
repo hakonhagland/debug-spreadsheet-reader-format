@@ -3,10 +3,11 @@
 use feature qw(say);
 use strict;
 use warnings;
+use lib './inc';
 
-use DateTimeX::Format::Excel;
+use DateTimeXFormatExcel;
 my @args_list = ('system_type', 'apple_excel');
-my $converter = DateTimeX::Format::Excel->new( @args_list );
+my $converter = DateTimeXFormatExcel->new( @args_list );
 my $num = "0.112311";
 my $dt = $converter->parse_datetime( $num );
 my $calc_sub_secs = $dt->format_cldr( "S" );
