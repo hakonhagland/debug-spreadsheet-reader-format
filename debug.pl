@@ -6,11 +6,13 @@ use warnings;
 use lib './inc';
 use POSIX qw( floor fmod );
 use DateTimeXFormatExcel;
+
 {
     say "DateTime::VERSION : ", $DateTime::VERSION;
     no warnings 'redefine';
-    *DateTime::_format_nanosecs = \&format_nanosecs2;
+    *DateTime::_format_nanosecs = \&format_nanosecs;
     *DateTime::format_cldr = \&format_cldr;
+    #*DateTime::_cldr_pattern = \&cldr_pattern;
     my @args_list = ('system_type', 'apple_excel');
     my $converter = DateTimeXFormatExcel->new( @args_list );
     my $num = "0.112311";
@@ -66,6 +68,19 @@ sub format_nanosecs2 {
     );
 }
 
+sub format_nanosecs3 {
+    my $self = shift;
+    my $precision = @_ ? shift : 9;
+    say "Precision: '$precision'";
+    my $l   = $precision;
+    my $val = sprintf(
+        "%.${l}f",
+        $self->fractional_second() - $self->second()
+    );
+    $val =~ s/^0\.//;
+    $val || 0;
+}
+
 sub format_cldr {
         my $self = shift;
 
@@ -75,6 +90,7 @@ sub format_cldr {
 
         my @r;
         foreach my $p (@p) {
+            say " .. p = '$p'";
             $p =~ s/\G
                     (?:
                       '((?:[^']|'')*)' # quote escaped bit of text
@@ -105,3 +121,4 @@ sub format_cldr {
 
         return @r;
     }
+
